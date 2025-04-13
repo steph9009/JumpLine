@@ -1,86 +1,167 @@
-# 🚀 JumpLine
-###### Script Python per Filtrare Righe Basato sui Primi 3 Caratteri
+# 🚀 JumpLine 🇮🇹
 
-Questo repository contiene un semplice script Python progettato per leggere un file di testo (`Parole_Input.txt`), filtrare le righe consecutive i cui primi tre caratteri sono identici, e scrivere le righe rimanenti in un nuovo file (`Parole_Output.txt`).
+##### Script per pulire righe consecutive basato sui primi N caratteri
 
-## Funzionamento
+**(Script aggiornato al: 12 aprile 2025)**
 
-Lo script opera nel seguente modo:
+## A Cosa Serve?
 
-1.  **Apre i File**: Apre il file `Parole_Input.txt` in modalità lettura (`r`) e il file `Parole_Output.txt` in modalità scrittura (`w`). Se `Parole_Output.txt` esiste già, verrà sovrascritto. Entrambi i file vengono aperti utilizzando la codifica `ansi`.
-2.  **Itera sulle Righe**: Legge il file di input riga per riga.
-3.  **Confronta i Primi 3 Caratteri**: Mantiene in memoria la riga precedente che è stata scritta nel file di output. Per ogni nuova riga letta, confronta i suoi primi tre caratteri (`riga[:3]`) con i primi tre caratteri della riga precedente memorizzata (`riga_precedente[:3]`).
-4.  **Filtra le Righe**:
-    * Se i primi tre caratteri della riga corrente sono **identici** a quelli della riga precedente memorizzata, la riga corrente viene **ignorata** (non viene scritta nel file di output).
-    * Se i primi tre caratteri sono **diversi**, o se si tratta della **prima riga** del file, la riga corrente viene **scritta** nel file `Parole_Output.txt` e diventa la nuova "riga precedente memorizzata" per il confronto successivo.
-5.  **Chiude i File**: Una volta processate tutte le righe, i file vengono chiusi automaticamente grazie all'uso dell'istruzione `with`.
+Questo script "pulisce" un file di testo. Rimuove le righe che iniziano nello stesso modo della riga immediatamente precedente (che è stata tenuta).
 
-## Requisiti
+È utile per sfoltire elenchi o file dove ci sono molte righe consecutive che differiscono solo verso la fine, rendendo il file più corto e meno ripetitivo.
 
-* Python 3 installato sul tuo sistema.
+**Esempio:** Se controlla i primi 3 caratteri:
 
-## Utilizzo
-
-1.  **Clona o Scarica**: Scarica lo script Python (ad esempio, salvalo come `filtra_parole.py`) e assicurati che si trovi nella stessa directory dei tuoi file di input/output.
-2.  **Prepara il File di Input**: Crea un file di testo chiamato `Parole_Input.txt` nella stessa directory. Inserisci il testo che desideri processare, con ogni elemento su una nuova riga. **Importante**: Assicurati che questo file sia salvato con codifica `ansi`.
-3.  **Esegui lo Script**: Apri un terminale o prompt dei comandi, naviga nella directory dove hai salvato i file ed esegui lo script con il comando:
-    ```bash
-    python filtra_parole.py
-    ```
-    *(Sostituisci `filtra_parole.py` con il nome effettivo che hai dato allo script)*
-4.  **Controlla l'Output**: Al termine dell'esecuzione, troverai un nuovo file chiamato `Parole_Output.txt` nella stessa directory. Questo file conterrà le righe del file di input, filtrate secondo la logica descritta.
-
-## Nota sulla Codifica
-
-Lo script utilizza specificamente la codifica `ansi`. Questo potrebbe causare problemi su sistemi non Windows o con caratteri non standard per quella codifica. Se incontri problemi di codifica o preferisci una codifica più universale, puoi modificare le righe `open(...)` nello script per usare `utf-8`:
-
-```python
-with open("Parole_Input.txt", encoding='utf-8', mode="r") as f_in, \
-     open("Parole_Output.txt", encoding='utf-8', mode="w") as f_out:
-    # ... resto dello script ...
+*Input:*
+```plaintext
+Apple Pie
+Apple Tart
+Apple Crumble
+Banana Bread
+Banana Split
+Cherry Pie
 ```
+
+*Output:*
+```plaintext
+Apple Pie
+Banana Bread
+Cherry Pie
+```
+(Perché "App" era uguale, "App" era uguale, poi "Ban" era diverso, "Ban" era uguale, poi "Che" era diverso).
+
+## Come Funziona?
+
+Lo script legge il tuo file riga per riga e confronta l'inizio di ogni riga con l'inizio dell'ultima riga che ha deciso di *tenere*.
+
+* Se l'inizio è **diverso**, tiene la riga corrente.
+* Se l'inizio è **uguale**, butta via la riga corrente.
+
+Per impostazione predefinita, controlla i primi **3** caratteri, ma puoi cambiare questo numero. Puoi anche dirgli di ignorare spazi bianchi all'inizio o alla fine delle righe prima di fare il confronto.
+
+## Come si Usa?
+
+1.  Assicurati di avere **Python 3** installato.
+2.  Salva lo script con un nome (es. `pulisci_righe.py`).
+3.  Apri un terminale o prompt dei comandi.
+4.  Esegui il comando:
+
+    ```bash
+    python pulisci_righe.py file_input.txt file_output.txt [opzioni]
+    ```
+
+    * Sostituisci `file_input.txt` con il nome del tuo file da pulire.
+    * Sostituisci `file_output.txt` con il nome che vuoi dare al file pulito (verrà creato o sovrascritto).
+
+### Personalizzare il Comportamento (Opzioni Comuni)
+
+* **Cambiare quanti caratteri controllare:**
+    Usa `-c` seguito da un numero (o `--chars` seguito da un numero).
+    *Esempio per controllare i primi 5 caratteri:*
+    ```bash
+    python pulisci_righe.py input.txt output.txt -c 5
+    ```
+
+* **Ignorare spazi inizio/fine riga:**
+    Aggiungi l'opzione `-s` (o `--strip`). Utile se le righe hanno indentature diverse.
+    *Esempio:*
+    ```bash
+    python pulisci_righe.py input_con_spazi.txt output.txt -s
+    ```
+
+* **Se il file ha problemi di caratteri (encoding):**
+    Di solito funziona, ma se vedi caratteri strani, potresti dover specificare la codifica giusta con `-e` (o `--encoding`).
+    *Esempio per file vecchi Windows (ANSI):*
+    ```bash
+    python pulisci_righe.py vecchio_file.txt output.txt -e cp1252
+    ```
+
+* **Vedere tutte le opzioni:**
+    ```bash
+    python pulisci_righe.py --help
+    ```
 
 ---
 
-## README - English 🇬🇧
+# 🚀 JumpLine 🇬🇧
 
-# 🚀 JumpLine
-###### Python Script to Filter Lines Based on First 3 Characters
+##### Clean Consecutive Lines Script
 
-This repository contains a simple Python script designed to read a text file (`Parole_Input.txt`), filter out consecutive lines where the first three characters are identical, and write the remaining lines to a new file (`Parole_Output.txt`).
+**(Script updated: April 12, 2025)**
 
-## How it Works
+## What Does It Do?
 
-The script operates as follows:
+This script "cleans" a text file. It removes lines that start the same way as the previous line that was kept.
 
-1.  **Opens Files**: It opens the input file `Parole_Input.txt` in read mode (`r`) and the output file `Parole_Output.txt` in write mode (`w`). If `Parole_Output.txt` already exists, it will be overwritten. Both files are opened using `ansi` encoding.
-2.  **Iterates Through Lines**: It reads the input file line by line.
-3.  **Compares First 3 Characters**: It keeps track of the previously processed line that was written to the output file. For each new line read, it compares its first three characters (`line[:3]`) with the first three characters of the previously stored line (`prev_line[:3]`).
-4.  **Filters Lines**:
-    * If the first three characters of the current line are **identical** to those of the previously stored line, the current line is **skipped** (it is not written to the output file).
-    * If the first three characters are **different**, or if it's the **first line** of the file, the current line is **written** to `Parole_Output.txt` and becomes the new "previously stored line" for the next comparison.
-5.  **Closes Files**: Once all lines have been processed, the files are automatically closed thanks to the `with` statement.
+It's useful for tidying up lists or files where you have many consecutive lines that only differ towards the end, making the file shorter and less repetitive.
 
-## Requirements
+**Example:** If checking the first 3 characters:
 
-* Python 3 installed on your system.
+*Input:*
+```plaintext
+Apple Pie
+Apple Tart
+Apple Crumble
+Banana Bread
+Banana Split
+Cherry Pie
+```
 
-## Usage
+*Output:*
+```plaintext
+Apple Pie
+Banana Bread
+Cherry Pie
+```
+(Because "App" was the same, "App" was the same, then "Ban" was different, "Ban" was the same, then "Che" was different).
 
-1.  **Clone or Download**: Download the Python script (e.g., save it as `filter_words.py`) and ensure it's in the same directory as your input/output files.
-2.  **Prepare Input File**: Create a text file named `Parole_Input.txt` in the same directory. Populate this file with the text you want to process, with each item on a new line. **Important**: Make sure this file is saved with `ansi` encoding.
-3.  **Run the Script**: Open a terminal or command prompt, navigate to the directory where you saved the files, and run the script using the command:
+## How Does It Work?
+
+The script reads your file line by line and compares the beginning of each line with the beginning of the last line it decided to *keep*.
+
+* If the start is **different**, it keeps the current line.
+* If the start is **the same**, it throws away the current line.
+
+By default, it checks the first **3** characters, but you can change this number. You can also tell it to ignore whitespace (spaces, tabs) at the beginning or end of lines before comparing.
+
+## How to Use It?
+
+1.  Make sure you have **Python 3** installed.
+2.  Save the script with a name (e.g., `clean_lines.py`).
+3.  Open a terminal or command prompt.
+4.  Run the command:
+
     ```bash
-    python filter_words.py
+    python clean_lines.py input_file.txt output_file.txt [options]
     ```
-    *(Replace `filter_words.py` with the actual name you gave the script)*
-4.  **Check Output**: After the script finishes execution, you will find a new file named `Parole_Output.txt` in the same directory. This file will contain the lines from the input file, filtered according to the described logic.
 
-## Encoding Note
+    * Replace `input_file.txt` with the name of your file to clean.
+    * Replace `output_file.txt` with the name you want for the clean result file (it will be created or overwritten).
 
-The script specifically uses `ansi` encoding. This might cause issues on non-Windows systems or with characters not standard to that encoding. If you encounter encoding problems or prefer a more universal encoding, you can modify the `open(...)` lines in the script to use `utf-8`:
+### Customizing How It Works (Common Options)
 
-```python
-with open("Parole_Input.txt", encoding='utf-8', mode="r") as f_in, \
-     open("Parole_Output.txt", encoding='utf-8', mode="w") as f_out:
-    # ... rest of the script ...
+* **Change how many characters to check:**
+    Use `-c` followed by a number (or `--chars` followed by a number).
+    *Example to check the first 5 characters:*
+    ```bash
+    python clean_lines.py input.txt output.txt -c 5
+    ```
+
+* **Ignore spaces at the start/end of lines:**
+    Add the `-s` option (or `--strip`). Useful if lines have different indentation.
+    *Example:*
+    ```bash
+    python clean_lines.py input_with_spaces.txt output.txt -s
+    ```
+
+* **If the file has character problems (encoding):**
+    It usually works, but if you see weird characters, you might need to specify the correct encoding with `-e` (or `--encoding`).
+    *Example for older Windows (ANSI) files:*
+    ```bash
+    python clean_lines.py old_file.txt output.txt -e cp1252
+    ```
+
+* **See all options:**
+    ```bash
+    python clean_lines.py --help
+    ```
